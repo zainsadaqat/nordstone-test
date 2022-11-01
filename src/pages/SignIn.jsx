@@ -1,12 +1,28 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import Description from '../components/Description';
 import Title from '../components/Title';
-import InputField from '../components/InputField';
-import SmallText from '../components/SmallText';
-import PrimaryButton from '../components/PrimaryButton';
 import { Link } from 'react-router-dom';
+import { useUserContext } from '../context/userContext';
+import PrimaryButton from '../components/PrimaryButton';
 
 const SignIn = () => {
+  const emailRef = useRef();
+  const passwordRef = useRef();
+
+  const { signInUser, forgotPassword } = useUserContext();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const email = emailRef.current.value;
+    const password = passwordRef.current.value;
+    if (email && password) signInUser(email, password);
+  };
+
+  const forgotPasswordHandler = () => {
+    const email = emailRef.current.value;
+    if (email) forgotPassword(email);
+  };
+
   return (
     <section className="min-h-[70vh]">
       <div>
@@ -16,26 +32,43 @@ const SignIn = () => {
           </div>
           <Description desc="Sign in to continue" />
         </div>
-        <form className="mt-24 flex flex-col items-center">
-          <div className="mb-[40px]">
-            <InputField label="Email" inputType="email" />
+        <form className="flex flex-col items-center" onSubmit={handleSubmit}>
+          <div className="flex flex-col justify-start">
+            <label className="mb-[4px] font-medium text-md">
+              Email <span className="text-[#ff0000]">*</span>
+            </label>
+            <input
+              className="mb-[32px] text-[#333] text-md font-bold w-80 h-10 px-2 rounded-md"
+              type="email"
+              ref={emailRef}
+              required
+            />
           </div>
-          <div className="mb-[56px]">
-            <div className="mb-[4px]">
-              <InputField label="Password" inputType="password" />
-            </div>
-            <SmallText text="Forgot Password?" />
+          <div className="flex flex-col justify-start">
+            <label className="mb-[4px] font-medium text-md">
+              Password <span className="text-[#ff0000]">*</span>
+            </label>
+            <input
+              className="mb-[32px] text-[#333] text-md font-bold w-80 h-10 px-2 rounded-md"
+              type="password"
+              ref={passwordRef}
+              required
+            />
           </div>
-          <div>
-            <PrimaryButton text="Login" type="submit" />
-            <div className="mt-[4px] flex items-center justify-center">
-              <SmallText text="Don't have an account?" />
-              <span className="ml-1 underline underline-offset-4">
-                <Link to="/signup">
-                  <SmallText text=" Sign Up" />
-                </Link>
+          <PrimaryButton buttonType="submit" text="Login" />
+          <div className="mt-4 flex flex-col">
+            <button
+              className="bg-transparent border-none text-xs text-center font-medium"
+              onClick={forgotPasswordHandler}
+            >
+              Forgot Password?
+            </button>
+            <p className="text-xs text-center font-medium">
+              Don't have an account?{' '}
+              <span className="underline underline-offset-4">
+                <Link to="/signup">Sign Up</Link>
               </span>
-            </div>
+            </p>
           </div>
         </form>
       </div>
